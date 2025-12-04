@@ -1,0 +1,61 @@
+/* static/style.css - modern clean UI styles for sentiment app */
+
+body {
+  background: linear-gradient(180deg, #f6f9ff 0%, #f0f6ff 100%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #1f2937;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  border-radius: 12px;
+}
+
+/* Result card (light) */
+.result-card {
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  border: 1px solid #eef3ff;
+  box-shadow: 0 3px 12px rgba(21, 54, 121, 0.04);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg,#2b8cff,#1b6ef6);
+  border: none;
+  box-shadow: 0 6px 18px rgba(43,140,255, 0.14);
+}
+
+.btn-primary:focus, .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(43,140,255,0.16);
+}
+
+/* Textarea */
+textarea.form-control {
+  background: linear-gradient(180deg,#fff,#fbfdff);
+  border: 1px solid #e6eefc;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+  font-size: 14px;
+}
+
+/* Footer small */
+.card-footer {
+  background: none;
+  border-top: 1px solid rgba(30,58,138,0.04);
+}
+
+/* small helper styles */
+.badge.bg-success { background: linear-gradient(90deg,#2dd4bf,#059669); }
+.badge.bg-danger  { background: linear-gradient(90deg,#ff7b7b,#e11d48); }
+
+.alert-danger {
+  background: linear-gradient(90deg,#fff5f5,#ffeaea);
+  border: 1px solid #ffd6d6;
+}
+
+/* Add responsive spacing tweaks */
+@media (max-width: 576px) {
+  .container { padding: 16px; }
+  .card-body { padding: 16px; }
+}
