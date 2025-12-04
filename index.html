@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sentiment Classifier — Demo</title>
+
+  <!-- Bootstrap (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Optional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <script>
+    // small helper for copy-to-clipboard
+    function copyText(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      navigator.clipboard.writeText(el.innerText || el.value)
+        .then(()=> { 
+          const btn = document.getElementById('copyBtn');
+          if (btn) {
+            btn.innerText = "Copied ✓";
+            setTimeout(()=> btn.innerText = "Copy", 1200);
+          }
+        });
+    }
+    // show spinner on submit
+    function onSubmit() {
+      const btn = document.getElementById('predictBtn');
+      const spinner = document.getElementById('spinner');
+      btn.disabled = true;
+      spinner.style.display = 'inline-block';
+      return true;
+    }
+    // insert sample text
+    function useSample(text) {
+      const t = document.getElementById('reviewBox');
+      t.value = text;
+    }
+  </script>
+</head>
+<body>
+  <div class="container my-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div>
+            <h1 class="h4 mb-1">Sentiment Classifier</h1>
+            <p class="text-muted mb-0">Type a movie review (or use a sample) — the model classifies it as <strong>Positive</strong> or <strong>Negative</strong>.</p>
+          </div>
+          <div class="text-end small text-muted">
+            <div>Model: <strong>{{ model_path or "Not loaded" }}</strong></div>
+          </div>
+        </div>
+
+        {% if error %}
+          <div class="alert alert-danger" role="alert">
+            <i class="fa fa-exclamation-circle me-2"></i>{{ error }}
+          </div>
+        {% endif %}
+
+        <form method="post" onsubmit="return onSubmit();">
+          <div class="mb-3">
+            <textarea id="reviewBox" name="review" class="form-control form-control-lg" rows="6"
+                      placeholder="Enter a review here...">{{ request.form.review or "" }}</textarea>
+          </div>
+
+          <div class="d-flex gap-2 mb-3 flex-wrap">
+            <button type="submit" id="predictBtn" class="btn btn-primary btn-lg">
+              <span id="spinner" class="spinner-border spinner-border-sm me-2" style="display:none" role="status"></span>
+              Predict
+            </button>
+
+            <button type="button" id="copyBtn" class="btn btn-outline-secondary btn-lg" onclick="copyText('reviewBox')">
+              Copy
+            </button>
+
+            <div class="ms-auto d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-light" onclick="useSample('I absolutely loved this film — great acting and story!')">Sample: Positive</button>
+              <button type="button" class="btn btn-sm btn-light" onclick="useSample('This movie was the worst. Boring and slow.')">Sample: Negative</button>
+            </div>
+          </div>
+        </form>
+
+        {% if prediction %}
+          <div class="result-card mt-3 p-3 rounded-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <h2 class="h5 mb-1">Prediction</h2>
+                <div class="d-flex align-items-center gap-2">
+                  {% if prediction == "Positive" %}
+                    <span class="badge bg-success fs-6"><i class="fa fa-thumbs-up me-1"></i> Positive</span>
+                  {% else %}
+                    <span class="badge bg-danger fs-6"><i class="fa fa-thumbs-down me-1"></i> Negative</span>
+                  {% endif %}
+
+                  {% if score is not none %}
+                    <small class="text-muted ms-2">Confidence: <strong>{{ (score*100)|round(2) }}%</strong></small>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="text-end">
+                <small class="text-muted">Model: <strong>{{ model_path or "unknown" }}</strong></small>
+                <div class="mt-2">
+                  <button class="btn btn-outline-primary btn-sm" onclick="useSample('I absolutely loved this film — great acting and story!')">Try Positive</button>
+                  <button class="btn btn-outline-secondary btn-sm" onclick="useSample('This movie was the worst. Boring and slow.')">Try Negative</button>
+                </div>
+              </div>
+            </div>
+
+            <hr>
+
+            <h6 class="mb-1">Review (cleaned preview)</h6>
+            <div id="cleanPreview" class="p-2 bg-white rounded" style="min-height:48px; border:1px solid #e9ecef;">
+              <!-- show the original text the user entered -->
+              <pre id="previewText" style="white-space:pre-wrap; margin:0; font-family:inherit;">{{ request.form.review or "" }}</pre>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="mt-4 text-muted small">
+          <strong>Tips:</strong> For best results, paste full sentences. Short fragments may reduce confidence.
+        </div>
+      </div>
+
+      <div class="card-footer text-muted d-flex justify-content-between align-items-center">
+        <div>Made with Flask • Sentiment demo</div>
+        <div><small>Local server: <a href="http://127.0.0.1:5000" target="_blank">127.0.0.1:5000</a></small></div>
+      </div>
+    </div>
+
+    <!-- small credits -->
+    <div class="text-center mt-3 text-muted small">Press <strong>Predict</strong> to classify. Use the copy button to copy text inside the box.</div>
+  </div>
+
+  <!-- Bootstrap JS (optional, for dropdowns/spinners) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
